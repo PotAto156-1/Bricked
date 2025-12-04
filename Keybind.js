@@ -2,12 +2,14 @@ let active = false; // terminal mode
 const activateKey = { shift: false, key: "x" };
 const deactivateKey = { key: "z" };
 
-// Flash overlay
+// Create red flash overlay
 const flash = document.createElement("div");
 Object.assign(flash.style, {
     position: "fixed",
-    top: "0", left: "0",
-    width: "100%", height: "100%",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
     background: "red",
     opacity: "0",
     pointerEvents: "none",
@@ -16,29 +18,35 @@ Object.assign(flash.style, {
 });
 document.body.appendChild(flash);
 
-// Black terminal overlay
-const black = document.createElement("div");
-Object.assign(black.style, {
+// Create black terminal overlay
+const terminal = document.createElement("div");
+Object.assign(terminal.style, {
     position: "fixed",
-    top: "0", left: "0",
-    width: "100%", height: "100%",
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
     background: "black",
-    color: "white",
+    color: "lime",
+    fontFamily: "monospace",
+    fontSize: "3rem",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "2rem",
-    zIndex: "9998",
-    display: "none",
+    zIndex: "10000",       // ensure overlay is on top
+    pointerEvents: "all",  // block interaction with page
+    userSelect: "none",
+    display: "none"
 });
-black.textContent = "Terminal Mode";
-document.body.appendChild(black);
+terminal.textContent = "TERMINAL MODE";
+document.body.appendChild(terminal);
 
-// Disable scrolling when active
-function disableScroll() {
+// Disable page scroll while terminal active
+function lockPage() {
     document.body.style.overflow = "hidden";
 }
-function enableScroll() {
+function unlockPage() {
     document.body.style.overflow = "";
 }
 
@@ -46,7 +54,7 @@ function enableScroll() {
 document.addEventListener("keydown", (e) => {
     if (e.key === "Shift") activateKey.shift = true;
 
-    // Activate terminal
+    // Activate terminal (Shift+X)
     if (activateKey.shift && e.key.toLowerCase() === activateKey.key) {
         activateTerminal();
     }
@@ -56,7 +64,7 @@ document.addEventListener("keydown", (e) => {
         deactivateTerminal();
     }
 
-    // Block F11 and zoom
+    // Block F11 and zoom shortcuts while terminal active
     if (active) {
         if (["F11"].includes(e.key)) e.preventDefault();
         if (e.ctrlKey && ["+", "-", "0", "="].includes(e.key)) e.preventDefault();
@@ -67,27 +75,25 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "Shift") activateKey.shift = false;
 });
 
+// Activate terminal
 function activateTerminal() {
     if (active) return;
     active = true;
 
+    // Flash red first
     flash.style.opacity = "1";
     setTimeout(() => {
         flash.style.opacity = "0";
-        black.style.display = "flex";
-        disableScroll();
-        // Optional: attempt fullscreen (may fail on Esc)
-        document.documentElement.requestFullscreen().catch(()=>{});
+        terminal.style.display = "flex";
+        lockPage();
     }, 800);
 }
 
+// Deactivate terminal
 function deactivateTerminal() {
     if (!active) return;
     active = false;
 
-    black.style.display = "none";
-    enableScroll();
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(()=>{});
-    }
+    terminal.style.display = "none";
+    unlockPage();
 }
