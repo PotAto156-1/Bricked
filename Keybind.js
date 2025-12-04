@@ -49,7 +49,8 @@ async function activateSequence() {
     flash.style.opacity = "1";
     setTimeout(() => {
         flash.style.opacity = "0";
-    }, 200);
+         black.style.display = "flex";
+    }, 800);
 
     // Enter fullscreen
     try {
