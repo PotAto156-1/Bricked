@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #fff;
+}
+
+#main-screen {
+    text-align: center;
+    padding-top: 150px;
+}
+
+.logo {
+    font-size: 80px;
+    font-weight: bold;
+    color: #4285f4;
+    font-family: 'Product Sans', Arial, sans-serif;
+}
+
+.search {
+    margin-top: 30px;
+    width: 40%;
+    padding: 12px 20px;
+    font-size: 18px;
+    border-radius: 50px;
+    border: 1px solid #ccc;
+    outline: none;
+}
+
+#flash-screen {
+    position: fixed;
+    inset: 0;
+    background: red;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 5;
+}
+
+#black-screen {
+    position: fixed;
+    inset: 0;
+    background: black;
+    color: #0f0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    font-size: 20px;
+    z-index: 10;
+}
+
+.terminal-text {
+    white-space: pre-wrap;
+}
