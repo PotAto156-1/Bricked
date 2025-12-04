@@ -1,16 +1,13 @@
-let active = false; // whether terminal mode is active
-const activateKey = { shift: false, key: "x" }; // Shift+X to activate
-const deactivateKey = { key: "z" }; // Shift+Ctrl+Z to deactivate
+let active = false; // terminal mode
+const activateKey = { shift: false, key: "x" };
+const deactivateKey = { key: "z" };
 
-// Create flash screen
+// Flash overlay
 const flash = document.createElement("div");
-flash.id = "flash-screen";
 Object.assign(flash.style, {
     position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
+    top: "0", left: "0",
+    width: "100%", height: "100%",
     background: "red",
     opacity: "0",
     pointerEvents: "none",
@@ -19,16 +16,12 @@ Object.assign(flash.style, {
 });
 document.body.appendChild(flash);
 
-// Create black screen (terminal)
+// Black terminal overlay
 const black = document.createElement("div");
-black.id = "black-screen";
 Object.assign(black.style, {
-    display: "none",
     position: "fixed",
-    top: "0",
-    left: "0",
-    width: "100%",
-    height: "100%",
+    top: "0", left: "0",
+    width: "100%", height: "100%",
     background: "black",
     color: "white",
     display: "flex",
@@ -36,33 +29,36 @@ Object.assign(black.style, {
     justifyContent: "center",
     fontSize: "2rem",
     zIndex: "9998",
+    display: "none",
 });
 black.textContent = "Terminal Mode";
 document.body.appendChild(black);
 
-// Listen for key presses
+// Disable scrolling when active
+function disableScroll() {
+    document.body.style.overflow = "hidden";
+}
+function enableScroll() {
+    document.body.style.overflow = "";
+}
+
+// Key listeners
 document.addEventListener("keydown", (e) => {
-    // Track Shift for activation
     if (e.key === "Shift") activateKey.shift = true;
 
-    // Activate terminal mode (Shift + X)
+    // Activate terminal
     if (activateKey.shift && e.key.toLowerCase() === activateKey.key) {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => console.error("Fullscreen failed:", err));
-        }
         activateTerminal();
     }
 
-    // Deactivate terminal mode (Shift + Ctrl + Z)
+    // Deactivate terminal (Shift+Ctrl+Z)
     if (active && e.shiftKey && e.ctrlKey && e.key.toLowerCase() === deactivateKey.key) {
         deactivateTerminal();
     }
 
-    // While terminal active, block F11 and zoom shortcuts
+    // Block F11 and zoom
     if (active) {
-        const blocked = ["F11"];
-        if (blocked.includes(e.key)) e.preventDefault();
-
+        if (["F11"].includes(e.key)) e.preventDefault();
         if (e.ctrlKey && ["+", "-", "0", "="].includes(e.key)) e.preventDefault();
     }
 });
@@ -71,36 +67,27 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "Shift") activateKey.shift = false;
 });
 
-// Detect fullscreen exit (e.g., user pressed Esc)
-document.addEventListener("fullscreenchange", () => {
-    if (active && !document.fullscreenElement) {
-        // Re-enter fullscreen immediately
-        document.documentElement.requestFullscreen().catch(err => console.error("Fullscreen re-entry failed:", err));
-    }
-});
-
-// Activate terminal mode sequence
 function activateTerminal() {
     if (active) return;
     active = true;
 
-    // Flash red
     flash.style.opacity = "1";
     setTimeout(() => {
         flash.style.opacity = "0";
         black.style.display = "flex";
+        disableScroll();
+        // Optional: attempt fullscreen (may fail on Esc)
+        document.documentElement.requestFullscreen().catch(()=>{});
     }, 800);
 }
 
-// Deactivate terminal mode sequence
 function deactivateTerminal() {
     if (!active) return;
     active = false;
 
     black.style.display = "none";
-
-    // Exit fullscreen
+    enableScroll();
     if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => console.error(err));
+        document.exitFullscreen().catch(()=>{});
     }
 }
