@@ -54,7 +54,7 @@ async function activateSequence() {
     // Enter fullscreen
     try {
         if (!document.fullscreenElement) {
-            await document.documentElement.requestFullscreen();
+    document.documentElement.requestFullscreen().catch(err => console.error(err));
         }
     } catch (err) {
         console.error("Fullscreen failed:", err);
