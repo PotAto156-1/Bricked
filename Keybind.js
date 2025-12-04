@@ -1,5 +1,8 @@
 let active = false; // whether terminal mode is active
-const keybind = { shift: false, key: "x" };
+const activateKey = { shift: false, key: "x" }; // Shift+X to activate
+
+// No need to track Shift+Ctrl separately, we’ll check e.ctrlKey
+const deactivateKey = { key: "z" }; // Shift+Ctrl+Z to deactivate
 
 // Create flash screen
 const flash = document.createElement("div");
@@ -41,19 +44,23 @@ document.body.appendChild(black);
 
 // Listen for key presses
 document.addEventListener("keydown", (e) => {
-    if (e.key === "Shift") keybind.shift = true;
+    // Track Shift for activation
+    if (e.key === "Shift") activateKey.shift = true;
 
-    // Trigger Shift + X
-    if (keybind.shift && e.key.toLowerCase() === keybind.key) {
-        // Request fullscreen directly (user gesture)
+    // Activate terminal mode (Shift + X)
+    if (activateKey.shift && e.key.toLowerCase() === activateKey.key) {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(err => console.error("Fullscreen failed:", err));
         }
-
-        toggleMode();
+        activateTerminal();
     }
 
-    // Block unwanted keys while terminal is active
+    // Deactivate terminal mode (Shift + Ctrl + Z)
+    if (active && e.shiftKey && e.ctrlKey && e.key.toLowerCase() === deactivateKey.key) {
+        deactivateTerminal();
+    }
+
+    // While terminal active, block F11 and zoom shortcuts
     if (active) {
         const blocked = ["F11"];
         if (blocked.includes(e.key)) e.preventDefault();
@@ -63,31 +70,25 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.addEventListener("keyup", (e) => {
-    if (e.key === "Shift") keybind.shift = false;
+    if (e.key === "Shift") activateKey.shift = false;
 });
 
-function toggleMode() {
-    if (!active) {
-        activateSequence();
-    } else {
-        deactivateSequence();
-    }
-}
-
-function activateSequence() {
+// Activate terminal mode sequence
+function activateTerminal() {
+    if (active) return;
     active = true;
 
     // Flash red
     flash.style.opacity = "1";
     setTimeout(() => {
         flash.style.opacity = "0";
-
-        // Show black terminal immediately after flash
         black.style.display = "flex";
-    }, 800); // red flash duration
+    }, 800);
 }
 
-function deactivateSequence() {
+// Deactivate terminal mode sequence
+function deactivateTerminal() {
+    if (!active) return;
     active = false;
 
     black.style.display = "none";
