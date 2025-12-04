@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Mockup</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="main-screen">
+        <div class="logo">Google</div>
+        <input class="search" type="text" placeholder="Search Google or type a URL">
+    </div>
+
+    <div id="flash-screen"></div>
+
+    <div id="black-screen">
+        <pre class="terminal-text">
+Initializing system...
+Loading modules...
+Connection established.
+        </pre>
+    </div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
