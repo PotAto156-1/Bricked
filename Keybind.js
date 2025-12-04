@@ -1,7 +1,5 @@
 let active = false; // whether terminal mode is active
 const activateKey = { shift: false, key: "x" }; // Shift+X to activate
-
-// No need to track Shift+Ctrl separately, we’ll check e.ctrlKey
 const deactivateKey = { key: "z" }; // Shift+Ctrl+Z to deactivate
 
 // Create flash screen
@@ -71,6 +69,14 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("keyup", (e) => {
     if (e.key === "Shift") activateKey.shift = false;
+});
+
+// Detect fullscreen exit (e.g., user pressed Esc)
+document.addEventListener("fullscreenchange", () => {
+    if (active && !document.fullscreenElement) {
+        // Re-enter fullscreen immediately
+        document.documentElement.requestFullscreen().catch(err => console.error("Fullscreen re-entry failed:", err));
+    }
 });
 
 // Activate terminal mode sequence
