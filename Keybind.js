@@ -39,7 +39,7 @@ Object.assign(terminal.style, {
     userSelect: "none",
     display: "none"
 });
-terminal.textContent = "TERMINAL MODE";
+terminal.textContent = "Access has been terminated. This device has been disabled following unauthorized activity directed toward a classified federal infrastructure.";
 document.body.appendChild(terminal);
 
 // Disable page scroll while terminal active
